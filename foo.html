@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>I hate eating rocks?</title>
+      <link rel="stylesheet" href="static/index.css" type="text/css" />
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+              integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+              crossorigin="anonymous"></script>
+  </head>
+
+<body>
+
+    Softwara!
+
+<br>
+<textarea id="form1" style="width: 757px; height: 170px" rows="10" cols="80">the bread</textarea>
+<br>
+
+<button id="sendButtonGenerate">Generate <div id="spinnerGenerate" class="loader notVisible"></div> </button>
+<button id="sendButtonHighlight">Higlight <div id="spinnerHighlight" class="loader notVisible"></div> </button>
+
+<p> Highlighted: </p>
+<span id = "displayHighlight"></span> 
+
+<p> Predictions: </p>
+<span id = "displayPrediction"></span> 
+
+<script type="text/JavaScript">
+
+$("#sendButtonGenerate").click(function() {
+    var text = $('#form1').val()
+    $('#spinnerGenerate').removeClass('notVisible')
+    $.post("/generate", { text: text})
+        .done(function( data ) {
+            $('#spinnerGenerate').addClass('notVisible')
+            var message = data
+            displayPrediction.innerHTML= message;
+            //buildPredictionBoxes();
+        });
+});
+
+$("#sendButtonHighlight").click(function() {
+    var text = $('#form1').val()
+    $('#spinnerHighlight').removeClass('notVisible')
+    $.post("/highlight", { text: text})
+        .done(function( data ) {
+            var message = data
+            $('#spinnerHighlight').addClass('notVisible')
+            displayHighlight.innerHTML= message;
+        });
+});
+
+
+    
+
+$(document).on('click', '.predictionBox', function(){
+    selectedBoxText = $(this).text();
+    console.log(selectedBoxText)
+    var box = $("#form1");
+    box.val(box.val() + selectedBoxText);
+});
+
+</script>
+
+</body>
