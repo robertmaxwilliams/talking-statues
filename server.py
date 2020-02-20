@@ -4,6 +4,8 @@ from random import randint as dice
 import time
 import markovify
 
+import gpt2_test 
+
 app = Bottle()
 
 # build text model
@@ -13,13 +15,11 @@ with open("corpus.txt", encoding="utf8") as f:
 text_model = markovify.Text(corpus)
 
 def generate_from_text_model(text):
+    gems = gpt2_test.generate_text(text)
     ret = ""
     try:
-        for _ in range(5):
-            ret += "<div class='predictionBox'> <p>" + text_model.make_sentence_with_start(
-                    text_model.word_join(
-                        [x.replace('.','') for x in text_model.word_split(text) if x][-2:]),
-                        string=False) + "</p> </div>"
+        for i in range(5):
+            ret += f"<div class='predictionBox'> <p><pre>{gems[i]}</pre></p> </div>"
     except Exception as e:
         print(f"FEEE\n{e}\nEEEEF")
         return "sorry, model failure: " + str(e)
