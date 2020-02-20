@@ -2,16 +2,15 @@ from bottle import static_file
 from bottle import Bottle, run, request
 from random import randint as dice
 import time
+import markovify
+
 app = Bottle()
 
-
 # build text model
-import markovify
-with open("corpus.txt") as f:
+with open("corpus.txt", encoding="utf8") as f:
     corpus = f.read()
+
 text_model = markovify.Text(corpus)
-
-
 
 def generate_from_text_model(text):
     ret = ""
@@ -20,14 +19,11 @@ def generate_from_text_model(text):
             ret += "<div class='predictionBox'> <p>" + text_model.make_sentence_with_start(
                     text_model.word_join(
                         [x.replace('.','') for x in text_model.word_split(text) if x][-2:]),
-                       string=False) + "</p> </div>"
+                        string=False) + "</p> </div>"
     except Exception as e:
-        print("FEEE")
-        print(e)
-        print("EEEEF")
+        print(f"FEEE\n{e}\nEEEEF")
         return "sorry, model failure: " + str(e)
     return ret
-
 
 def random_color():
     return "{:06x}".format(dice(0, 0xffffff))
@@ -36,8 +32,7 @@ def colorize(text):
     words = text_model.word_split(text)
     ret = ""
     for w in words:
-        ret += "<span style='background-color:#" + random_color()\
-               + "'>" + w  + "</span> "
+        ret += f"<span style='background-color:#{random_color()}'>{w}</span>"
     return ret
 
 @app.route('/hello')
