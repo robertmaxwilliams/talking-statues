@@ -24,3 +24,5 @@ docs/_locale/_pot/.doctrees/
 
 models/
 checkpoint/
+
+.vscode/

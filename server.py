@@ -4,7 +4,7 @@ from random import randint as dice
 import time
 import markovify
 
-import gpt2_test 
+import gpt2_test
 
 app = Bottle()
 
@@ -13,6 +13,7 @@ with open("corpus.txt", encoding="utf8") as f:
     corpus = f.read()
 
 text_model = markovify.Text(corpus)
+
 
 def generate_from_text_model(text):
     gems = gpt2_test.generate_text(text)
@@ -25,8 +26,10 @@ def generate_from_text_model(text):
         return "sorry, model failure: " + str(e)
     return ret
 
+
 def random_color():
-    return "{:06x}".format(dice(0, 0xffffff))
+    return "{:06x}".format(dice(0, 0xFFFFFF))
+
 
 def colorize(text):
     words = text_model.word_split(text)
@@ -35,31 +38,34 @@ def colorize(text):
         ret += f"<span style='background-color:#{random_color()}'>{w}</span>"
     return ret
 
-@app.route('/hello')
+
+@app.route("/hello")
 def hello():
     return "Hello World!"
 
 
-@app.route('/static/<filename>')
+@app.route("/static/<filename>")
 def server_static(filename):
-    return static_file(filename, root='./static/')
+    return static_file(filename, root="./static/")
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return static_file('foo.html', root='./')
+    return static_file("foo.html", root="./")
 
 
-@app.post('/generate')
+@app.post("/generate")
 def generate():
     time.sleep(1)
-    text = request.forms.get('text')
+    text = request.forms.get("text")
     return generate_from_text_model(text)
 
-@app.post('/highlight')
+
+@app.post("/highlight")
 def highlight():
     time.sleep(0.5)
-    text = request.forms.get('text')
+    text = request.forms.get("text")
     return "<p>" + colorize(text) + "</p>"
 
-run(app, host='localhost', port=8080)
+
+run(app, host="localhost", port=8080)
