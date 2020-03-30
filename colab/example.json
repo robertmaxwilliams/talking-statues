@@ -1,0 +1,48 @@
+{
+  "responseId": "e307166d-c333-4f7b-bc24-5dc6978b4606-dd2bbea9",
+  "queryResult": {
+    "queryText": "a duck",
+    "parameters": {
+      "subject_thing": "duck",
+      "subject_event": "",
+      "subject_place": ""
+    },
+    "allRequiredParamsPresent": true,
+    "fulfillmentText": "Here is a story about $subject1: there was a $subject1 . It was very unhappy and died. The end.",
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            "Here is a story about $subject1: there was a $subject1 . It was very unhappy and died. The end."
+          ]
+        }
+      }
+    ],
+    "outputContexts": [
+      {
+        "name": "projects/gpt2-custom-story-maker/agent/sessions/dde2873e-3fe9-899c-21d6-3df66d232a2e/contexts/__system_counters__",
+        "parameters": {
+          "no-input": 0,
+          "no-match": 0,
+          "subject_thing": "duck",
+          "subject_thing.original": "duck",
+          "subject_event": "",
+          "subject_event.original": "",
+          "subject_place": "",
+          "subject_place.original": ""
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/gpt2-custom-story-maker/agent/intents/0038c1f6-d374-49ce-8000-6049a94cd5c0",
+      "displayName": "make_story",
+      "endInteraction": true
+    },
+    "intentDetectionConfidence": 0.3,
+    "languageCode": "en"
+  },
+  "originalDetectIntentRequest": {
+    "payload": {}
+  },
+  "session": "projects/gpt2-custom-story-maker/agent/sessions/dde2873e-3fe9-899c-21d6-3df66d232a2e"
+}
