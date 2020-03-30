@@ -90,9 +90,9 @@ def webhook():
         return '{}'
     else:
         prefix = random.choice(story_prefix_templates).format(query_text)
-        story = prefix ## TODO actually do the generation
-        # TODO we'll have to do some custom trimming to get just the story part,
-        # since we want it to start on "once upon a time" or "a long time ago" or whatever
+        story = gpt2_test.generate_text(prefix)[0] # TODO only do batch of one, is it still a list?
+        # TODO test the following to make sure it is "Once upun a time" or whatever + generated text
+        story = prefix[prefix.rfind('"')+1:] + story
         print("Returning a story:", story)
         return json.dumps({"fulfillmentText": story})
 
