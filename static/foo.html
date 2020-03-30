@@ -1,0 +1,67 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Sleep Story Machine</title>
+    <link rel="stylesheet" href="./static/index.css" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    <div id = "container" class = "center">
+        <header>
+            <h1>Sleep Story Machine</h1>
+        </header>
+        <br>
+        <textarea id="form1" style="width: 757px; height: 170px" rows="10" cols="80">the bread</textarea>
+        <br>
+
+        <div id = "buttonContainer" class = "center">
+            <button id="sendButtonGenerate" class = "button">Generate</button>
+            <button id="sendButtonHighlight" class = "button">Higlight</button>
+            <div id="spinnerGenerate" class="loader notVisible center"></div>
+            <div id="spinnerHighlight" class="loader notVisible center"></div>
+        </div>
+
+        <p> Highlighted: </p>
+        <div id = "displayHighlight" class = "center"></div> 
+        <br style = "clear: both;">
+        <p> Predictions: </p>
+        <span id = "displayPrediction"></span> 
+
+        <script type="text/JavaScript">
+            $("#sendButtonGenerate").click(function() {
+                var text = $('#form1').val()
+                $('#spinnerGenerate').removeClass('notVisible')
+                $.post("/generate", { text: text})
+                    .done(function( data ) {
+                        $('#spinnerGenerate').addClass('notVisible')
+                        var message = data
+                        displayPrediction.innerHTML= message;
+                        // buildPredictionBoxes();
+                    });
+            });
+
+            $("#sendButtonHighlight").click(function() {
+                var text = $('#form1').val()
+                $('#spinnerHighlight').removeClass('notVisible')
+                $.post("/highlight", { text: text})
+                    .done(function( data ) {
+                        var message = data
+                        $('#spinnerHighlight').addClass('notVisible')
+                        displayHighlight.innerHTML= message;
+                    });
+            });
+
+            $(document).on('click', '.predictionBox', function(){
+                selectedBoxText = $(this).text();
+                console.log(selectedBoxText)
+                var box = $("#form1");
+                box.val(box.val() + selectedBoxText);
+            });
+        </script>
+
+    </div>
+</body>
+</html>

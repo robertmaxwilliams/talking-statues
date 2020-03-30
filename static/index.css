@@ -1,30 +1,87 @@
+@font-face {
+    font-family: 'sleepTalk';
+    src: url('./sleepTalk.woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1 {
+    font-family: 'sleepTalk';
+    font-size: 60px;
+    font-weight: 900;
+    margin: 50px 0 0 0;
+}
+
+#buttonContainer {
+    width: 50%;
+    margin-top: 50px; 
+}
+
+#displayHighlight {
+    width: 70%;
+    
+}
 div.predictionBox {
-background-color: lightgray;
-padding:5px;
-border:5px solid darkgray;
-margin:5px;
+    background-color: lightgray;
+    padding: 5px;
+    border: 5px solid darkgray;
+    margin: 5px;
+    transition-duration: 0.1s;
 }
+
 div.predictionBox:hover {
-background-color: darkgray;
-border: 5px solid  lightgray;
+    background-color: darkgray;
+    border: 5px solid lightgray;
+    transition-duration: 0.2s;
 }
+
 div.predictionBox:active {
-background-color: white;
-border: 5px solid lightgray;
+    background-color: white;
+    border: 5px solid lightgray;
 }
+
 .loader {
-  border: 5px solid #f3f3f3; /* Light grey */
-  border-top: 5px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
-  animation: spin 2s linear infinite;
+    border: 5px solid #f3f3f3;
+    /* Light grey */
+    border-top: 5px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    animation: spin 2s linear infinite;
+}
+
+.button {
+    font-family: 'sleepTalk';
+    font-size: 30px;
+    text-align: center;
+    padding-top: 10px;
+    width: 100px;
+    border: 0;
+    margin: auto 10px;
+    /* padding: 0; */
+    background-color: turquoise;
+}
+
+.center {
+    margin: 0 auto;
+    text-align: center;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
-.notVisible {display: none;}
+#form1 {
+    border-radius: 25px;
+    padding: 10px;
+}
 
+.notVisible {
+    display: none;
+}
