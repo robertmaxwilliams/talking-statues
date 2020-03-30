@@ -3,6 +3,7 @@ from bottle import Bottle, run, request
 from random import randint as dice
 import time
 import json
+import random
 
 import gpt2_test
 
@@ -64,24 +65,35 @@ def highlight():
 def print_red(text): 
     print("\033[91m {}\033[00m".format(text))
 
+# TODO make sure these tokenize well - should the end with spaces and or punctuation?
+story_prefix_templates = [
+('The old man asked what I wanted to hear a story about. '
+'I pushed a coin his way and said "{}". He began his story, "Once upon a time,'),
+'''"Grandma, tell me a story!"
+"Of course dear, what about?"
+"{}"
+"Well, once upon a time''',
+'''We were all sitting around the campfire, and it was my turn to tell a story.
+"{}" one of them piped up from the other side of the fire.
+I had a perfect story, which I told without interruption: "A long, long time ago,'''
+]
+
+
 @app.post("/webhook")
 def webhook():
     print("WEbhhook called!")
     print_red(request.body.getvalue().decode('utf-8'))
     body = json.loads(request.body.getvalue().decode('utf-8'))
-    if body["queryResult"]["queryText"] == "GOOGLE_ASSISTANT_WELCOME":
+    query_text = body["queryResult"]["queryText"]
+    if query_text == "GOOGLE_ASSISTANT_WELCOME":
         print("Welcome page, returning empty json object")
         return '{}'
-    parameters = body['queryResult']['parameters']
-    story = 'Let me tell you a story. '
-    if parameters['subject_thing'] != '':
-        story += f"There was a {parameters['subject_thing']}. "
-    if parameters['subject_place'] != '':
-        story += f"This took place at {parameters['subject_place']}. "
-    if parameters['subject_event'] != '':
-        story += f"It was a great day, the day of a {parameters['subject_event']}. "
-    story += 'THE PLOT!'
-    json_text = f'{{"fulfillmentText": "{story}"}}'
-    return json_text
+    else:
+        prefix = random.choice(story_prefix_templates).format(query_text)
+        story = prefix ## TODO actually do the generation
+        # TODO we'll have to do some custom trimming to get just the story part,
+        # since we want it to start on "once upon a time" or "a long time ago" or whatever
+        print("Returning a story:", story)
+        return json.dumps({"fulfillmentText": story})
 
 run(app, host="localhost", port=8080)
