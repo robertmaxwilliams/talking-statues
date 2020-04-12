@@ -1,4 +1,4 @@
-#import gpt_2_simple as gpt2
+import gpt_2_simple as gpt2
 import os
 import requests
 from random import randint as dice
@@ -19,31 +19,12 @@ class bcolors:
 sess = None
 
 # Restart session if running this cell again
-'''
 if (sess != None):
     gpt2.reset_session(sess)
 
 sess = gpt2.start_tf_sess()
 gpt2.load_gpt2(sess, multi_gpu=False)
 # gpt2.load_gpt2(sess, multi_gpu=True)
-'''
-class FakeGenerator:
-    words = ["the", "of", "for", "by", "when", "of", "a"]
-    def generate(self, *args, prefix="", length=5, n_samples=1, **kwargs):
-        gens = []
-        for _ in range(n_samples):
-            gens.append(prefix + " " + " ".join(random.choices(self.words, k=length)) + ".")
-        return gens
-gpt2 = FakeGenerator()
-print(gpt2.generate(
-        sess,
-        prefix="foobar",
-        include_prefix=True,
-        return_as_list=True,
-        length=4,
-        nsamples=5,
-        ))
-
 
 def generate_text(prefix, length, num_samples):
     prefix = prefix[:length]
@@ -221,8 +202,7 @@ def webhook():
 # context.use_certificate_file('/etc/letsencrypt/live/sleepstorymachine.xyz/fullchain.pem')
 
 # context = ('/etc/letsencrypt/live/sleepstorymachine.xyz/fullchain.pem', '/etc/letsencrypt/live/sleepstorymachine.xyz/privkey.pem')
-##context = ('cert.crt', 'priv.key')
+context = ('cert.crt', 'priv.key')
 
-app.run(host="localhost", port=5000)#, ssl_context=context)
-#https://sleepstorymachine.xyz:5000/webhook
+app.run(host="0.0.0.0", port=5000), ssl_context=context)
 
