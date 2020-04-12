@@ -1,10 +1,10 @@
-import gpt_2_simple as gpt2
+#import gpt_2_simple as gpt2
 import os
 import requests
 from random import randint as dice
+import random
 import time
-import markovify
-from OpenSSL import SSL
+import json
 
 class bcolors:
     HEADER = "\033[95m"
@@ -19,12 +19,31 @@ class bcolors:
 sess = None
 
 # Restart session if running this cell again
+'''
 if (sess != None):
     gpt2.reset_session(sess)
 
 sess = gpt2.start_tf_sess()
 gpt2.load_gpt2(sess, multi_gpu=False)
 # gpt2.load_gpt2(sess, multi_gpu=True)
+'''
+class FakeGenerator:
+    words = ["the", "of", "for", "by", "when", "of", "a"]
+    def generate(self, *args, prefix="", length=5, n_samples=1, **kwargs):
+        gens = []
+        for _ in range(n_samples):
+            gens.append(prefix + " " + " ".join(random.choices(self.words, k=length)) + ".")
+        return gens
+gpt2 = FakeGenerator()
+print(gpt2.generate(
+        sess,
+        prefix="foobar",
+        include_prefix=True,
+        return_as_list=True,
+        length=4,
+        nsamples=5,
+        ))
+
 
 def generate_text(prefix, length, num_samples):
     prefix = prefix[:length]
@@ -46,14 +65,16 @@ from flask_ngrok import run_with_ngrok
 from flask import Flask, render_template, send_from_directory, request
 import time
 
+import threading
+
+
 app = Flask(__name__)
 # run_with_ngrok(app) 
+
 
 # build text model
 with open("../static/corpus.txt", encoding="utf8") as f:
     corpus = f.read()
-
-text_model = markovify.Text(corpus)
 
 
 def generate_from_text_model(text, length=100, num_samples=1):
@@ -73,7 +94,7 @@ def random_color():
 
 
 def colorize(text):
-    words = text_model.word_split(text)
+    words = text.split(" ")
     ret = ""
     for w in words:
         ret += f"<span style='background-color:#{random_color()}'>{w}</span>"
@@ -114,38 +135,94 @@ def highlight():
 def print_red(text): 
     print("\033[91m {}\033[00m".format(text))
 
+story_prefix_templates = [
+('The old man asked what I wanted to hear a story about. '
+'I pushed a coin his way and said "{}". He began his story, "Once upon a time,'),
+'''"Grandma, tell me a story!"
+"Of course dear, what about?"
+"{}"
+"Well, once upon a time''',
+'''We were all sitting around the campfire, and it was my turn to tell a story.
+"{}" one of them piped up from the other side of the fire.
+I had a perfect story, which I told without interruption: "A long, long time ago,'''
+]
+
+
+
+
+
+class LongRunner:
+    working = False
+    ready = False
+    story = None
+    asked = False
+    def start(self, query_text):
+        self.working = True
+        self.ready = False
+        self.asked = False
+        time.sleep(20)
+        self.generate_story_from_query_text(query_text)
+        self.working = False
+        self.ready = True
+        print("done!")
+    def get_result(self):
+        if self.ready:
+            self.ready = False
+            return (self.story, False)
+        elif not self.asked:
+            self.asked = True
+            return ("Okay, let me think of a story", True)
+        else:
+            return ("I'm still thinking...", True)
+    def generate_story_from_query_text(self, query_text):
+        prefix = random.choice(story_prefix_templates).format(query_text)
+        story = generate_text(prefix, 5, 1)[0]
+        story = prefix[prefix.rfind('"')+1:] + story
+        print("Returning a story:", story)
+        self.story = story
+long_runner = LongRunner()
+
+# exists so calling from thread is easilier
+def long_runner_helper(query_text):
+    long_runner.start(query_text)
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    wh_start= time.time()
     print("WEbhhook called!")
-    # body = request.body.getvalue().decode('utf-8')
-    # print_red(body)
-    # body = json.loads(body)
     body = request.get_json()
-    if body["queryResult"]["queryText"] == "GOOGLE_ASSISTANT_WELCOME":
+    query_text = body['queryResult']['queryText']
+    if query_text == "GOOGLE_ASSISTANT_WELCOME":
         print("Welcome page, returning empty json object")
         return '{}'
-    parameters = body['queryResult']['parameters']
-    story = 'Let me tell you a story. '
-    if parameters['subject_thing'] != '':
-        story += f"There was a {parameters['subject_thing']}. "
-    if parameters['subject_place'] != '':
-        story += f"This took place at {parameters['subject_place']}. "
-    if parameters['subject_event'] != '':
-        story += f"It was a great day, the day of a {parameters['subject_event']}. "
-    generated_story = generate_from_text_model(story, 1, num_samples=1)
-    print(generated_story)
-    # story += 'THE PLOT!'
-    json_text = f'{{"fulfillmentText": "{story}"}}'
-    wh_end= time.time()
-    print(f"Time to respond: {wh_end - wh_start}")
-    return json_text
+    if not (long_runner.working or long_runner.ready):
+        x = threading.Thread(target=long_runner_helper, args=(query_text,))
+        x.start()
+    result, expect_response = long_runner.get_result()
+    return json.dumps(
+            {"fulfillmentText": result, 
+                "payload": {
+                    "google": {
+                        "expectUserResponse": expect_response,
+                        "richResponse": {
+                            "items": [
+                                {
+                                    "simpleResponse": {
+                                        "textToSpeech": result
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                })
 
 # context = SSL.Context(SSL.PROTOCOL_TLSv1_2)
 # context.use_privatekey_file('/etc/letsencrypt/live/sleepstorymachine.xyz/privkey.pem')
 # context.use_certificate_file('/etc/letsencrypt/live/sleepstorymachine.xyz/fullchain.pem')
 
 # context = ('/etc/letsencrypt/live/sleepstorymachine.xyz/fullchain.pem', '/etc/letsencrypt/live/sleepstorymachine.xyz/privkey.pem')
-context = ('cert.crt', 'priv.key')
+##context = ('cert.crt', 'priv.key')
 
-app.run(host="0.0.0.0", port=5000, ssl_context=context)
+app.run(host="localhost", port=5000)#, ssl_context=context)
+#https://sleepstorymachine.xyz:5000/webhook
+
