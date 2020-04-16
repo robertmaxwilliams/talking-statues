@@ -13,6 +13,9 @@ from highlight import get_text_rankings
 
 app = Flask(__name__)
 
+sess = gpt2.start_tf_sess()
+gpt2.load_gpt2(sess, multi_gpu=False)
+
 #! Classes
 class bcolors:
     HEADER = '\033[95m'
@@ -74,9 +77,8 @@ class LongRunner:
 
 #! Functions
 
+
 def generate_text(prefix, length, num_samples):
-    sess = gpt2.start_tf_sess()
-    gpt2.load_gpt2(sess, multi_gpu=False)
     
     # prefix = prefix[:length]
     print(f'Generate: prefix = {prefix}')
@@ -93,7 +95,6 @@ def generate_text(prefix, length, num_samples):
     )
     output = [x[len(prefix):] for x in output]
 
-    gpt2.reset_session(sess)
 
     return output
 
@@ -114,26 +115,33 @@ def random_color():
     return '{:06x}'.format(dice(0, 0xFFFFFF))
 
 def color_from_rank(rank):
+    mustard = (0xFB, 0xB8, 0x09)
+    raspberry = (0x7A, 0x34, 0x58)
+    maroon = (0x52, 0x18, 0x2E)
     if rank == 0:
-        h = 0.5
+        color, opacity = mustard, 0.1
     elif rank < 10:
-        h = 0.6
-    elif rank < 30:
-        h = 0.7
-    elif rank < 90:
-        h = 0.8
-    elif rank < 3*90:
-        h = 0.9
-    else:
-        h = 1
-    rgb = colorsys.hsv_to_rgb(h, 0.8, 0.8)
-    return ''.join(['{:02x}'.format(min(int(round(256*x)), 255)) for x in rgb]).upper()
+        color, opacity = mustard, 0.2
+    elif rank < 100:
+        color, opacity = mustard, 0.4
+    elif rank < 1000:
+        color, opacity = raspberry, 0.4
+    elif rank < 5000:
+        color, opacity = raspberry, 0.6
+    elif rank < 10000:
+        color, opacity = raspberry, 0.7
+    elif rank < 30000:
+        color, opacity = maroon, 0.8
+    else: # 50257 is the maximum (worst) ranking
+        color, opacity = maroon, 0.95
+    return f"rgba({color[0]}, {color[1]}, {color[2]}, {opacity})"
+
 
 def colorize(text):
-    string_rank_pairs = get_text_rankings(text)
+    string_rank_pairs = get_text_rankings(sess, text)
     ret = ''
     for word, rank in string_rank_pairs:
-        ret += f'<span style=\'background-color:#{color_from_rank(rank)}\'>{word}</span>'
+        ret += f'<span style=\'background-color: {color_from_rank(rank)}\'>{word}</span>'
     return ret
 
 
@@ -156,7 +164,7 @@ def generate():
     
     text = request.form['text']
     print(f'Generate POST: prefix = {text}')
-    stories = generate_from_text_model(text, 100, num_samples=1)
+    stories = generate_from_text_model(text, 100, num_samples=5)
     
     generate_end = time.time()
     print(f'Time to respond: {generate_end - generate_start}')

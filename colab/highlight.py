@@ -82,15 +82,15 @@ def sample_sequence(*, hparams, length, start_token=None,
 
         return past, prev, tokens, all_logits
 
-def get_text_rankings(string):
+def get_text_rankings(sess, string):
     '''takes string, returns pairs of (string, int) 
     where the string is a part of the input and the int it it's gpt2 ranking with
     0 being most likely'''
     prefix = string
     batch_size=1
 
-    sess = gpt2.start_tf_sess()
-    gpt2.load_gpt2(sess, multi_gpu=False)
+    #sess = gpt2.start_tf_sess()
+    #gpt2.load_gpt2(sess, multi_gpu=False)
     checkpoint_path = os.path.join('checkpoint', 'run1')
     enc = encoder.get_encoder(checkpoint_path)
     hparams = model.default_hparams()
@@ -121,9 +121,8 @@ def get_text_rankings(string):
         logs = alt[0][i]
         token_string = enc.decode([token])
         token_ranking = find_ranking(logs, token)
-        print((token_string, token_ranking))
         string_rank_pairs.append((token_string, token_ranking))
 
-    gpt2.reset_session(sess)
+    #gpt2.reset_session(sess)
 
     return string_rank_pairs
