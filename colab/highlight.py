@@ -8,9 +8,11 @@ from gpt_2_simple.src.sample import *
 from gpt_2_simple.src import model, sample, encoder
 import gpt_2_simple as gpt2
 
+# Copied from gpt2_simple and modified to perform highlighting
 def sample_sequence(*, hparams, length, start_token=None,
                     batch_size=None, context=None, temperature=1,
                     top_k=0, top_p=0.0):
+    '''Not worth documenting at the moment, I barely understand what I did'''
     if start_token is None:
         assert context is not None, 'Specify exactly one of start_token and context!'
     else:
@@ -42,12 +44,6 @@ def sample_sequence(*, hparams, length, start_token=None,
             next_outputs = step(hparams, prev[:, tf.newaxis], past=past)
             logits = next_outputs['logits'][:, -1, :] / tf.cast(temperature, tf.float32)
             only_logits = logits
-            #if top_p > 0.0:
-            #    logits = top_p_logits(logits, p=top_p)
-            #else:
-            #    logits = top_k_logits(logits, k=top_k)
-            #samples = tf.random.categorical(
-            #    logits, num_samples=1, dtype=tf.int32)
             return [
                 tf.concat([past, next_outputs['presents']], axis=-2),
                 context_tail[:,0],
@@ -83,14 +79,12 @@ def sample_sequence(*, hparams, length, start_token=None,
         return past, prev, tokens, all_logits
 
 def get_text_rankings(sess, string):
-    '''takes string, returns pairs of (string, int) 
+    '''takes string, returns pairs of (string, int)
     where the string is a part of the input and the int it it's gpt2 ranking with
     0 being most likely'''
     prefix = string
     batch_size=1
 
-    #sess = gpt2.start_tf_sess()
-    #gpt2.load_gpt2(sess, multi_gpu=False)
     checkpoint_path = os.path.join('checkpoint', 'run1')
     enc = encoder.get_encoder(checkpoint_path)
     hparams = model.default_hparams()
@@ -123,6 +117,5 @@ def get_text_rankings(sess, string):
         token_ranking = find_ranking(logs, token)
         string_rank_pairs.append((token_string, token_ranking))
 
-    #gpt2.reset_session(sess)
 
     return string_rank_pairs
