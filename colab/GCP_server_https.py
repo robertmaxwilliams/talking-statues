@@ -8,13 +8,16 @@ import requests
 import threading
 import time
 import colorsys
+import tensorflow as tf
 
 from highlight import get_text_rankings
 
 app = Flask(__name__)
 
 sess = gpt2.start_tf_sess()
+graph = tf.get_default_graph()
 gpt2.load_gpt2(sess, multi_gpu=False)
+
 
 #! Classes
 class bcolors:
@@ -67,8 +70,8 @@ class LongRunner:
         prefix = random.choice(story_prefix_templates).format(query_text)
         print(f'Rand: prefix = {prefix}')
         
-        story = generate_text(prefix, 100, 1)[0]
-        # story = prefix[prefix.rfind('\'')+1:] + story
+        story = generate_text_threadsafe(prefix, 100, 1)[0]
+        story = prefix[prefix.rfind('"')+1:] + story
 
         print('Returning a story:', story)
 
@@ -76,7 +79,23 @@ class LongRunner:
 
 
 #! Functions
-
+def generate_text_threadsafe(prefix, length, num_samples):
+    print(f'Generate ts: prefix = {prefix}')
+    global sess
+    global graph
+    with graph.as_default():
+        with sess.as_default():
+            output = gpt2.generate(
+                sess,
+                prefix=prefix,
+                include_prefix=True,
+                return_as_list=True,
+                length=length,
+                nsamples=num_samples,
+                batch_size=num_samples,
+            )
+            output = [x[len(prefix):] for x in output]
+    return output
 
 def generate_text(prefix, length, num_samples):
     
@@ -91,7 +110,7 @@ def generate_text(prefix, length, num_samples):
         return_as_list=True,
         length=length,
         nsamples=num_samples,
-        # batch_size=num_samples,
+        batch_size=num_samples,
     )
     output = [x[len(prefix):] for x in output]
 
