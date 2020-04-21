@@ -1,3 +1,4 @@
-To install, do the pip thing with requirements.txt then python the
-server. Have fun.
-Also requirements.txt is wayyyyy out of date
+1. Install conda
+2. `conda create -n sleep-story --file package-list.txt`
+3. `conda activate sleep-story`
+4. `python server.py`
