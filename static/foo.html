@@ -9,25 +9,27 @@
     </script>
 </head>
 <body>
+    <div id = "backgroundDiv"></div>
     <div id = "container" class = "center">
         <header>
             <h1>Sleep Story Machine</h1>
+            <h2>A GPT2 model trained on bedtime stories</h2>
         </header>
         <br>
-        <textarea id="form1" style="width: 757px; height: 170px" rows="10" cols="80">the bread</textarea>
+        <textarea id="form1" rows="10" cols="80">the bread</textarea>
         <br>
 
         <div id = "buttonContainer" class = "center">
             <button id="sendButtonGenerate" class = "button">Generate</button>
-            <button id="sendButtonHighlight" class = "button">Higlight</button>
-            <div id="spinnerGenerate" class="loader notVisible center"></div>
-            <div id="spinnerHighlight" class="loader notVisible center"></div>
+            <button id="sendButtonHighlight" class = "button">Highlight</button>
         </div>
 
         <p> Highlighted: </p>
+        <div id="spinnerHighlight" class="loader notVisible center"></div>
         <div id = "displayHighlight" class = "center"></div> 
         <br style = "clear: both;">
         <p> Predictions: </p>
+        <div id="spinnerGenerate" class="loader notVisible center"></div>
         <span id = "displayPrediction"></span> 
 
         <script type="text/JavaScript">
@@ -61,7 +63,7 @@
                 box.val(box.val() + selectedBoxText);
             });
         </script>
-
     </div>
+    <a href = "about"><h3 class = 'center'>more info...</h3></a>
 </body>
 </html>

@@ -113,7 +113,7 @@ def generate_html_boxes_from_text_model(text, length=100, num_samples=1):
     ret = ''
     try:
         for i in range(num_samples):
-            ret += f'<div class=\'predictionBox\'> <p><pre>{gems[i]}</pre></p> </div>'
+            ret += f'<div class=\'predictionBox\'> <p>{gems[i]}</p> </div>'
     except Exception as e:
         print(f'FEEE\n{e}\nEEEEF')
         return 'sorry, model failure: ' + str(e)
@@ -148,7 +148,7 @@ def colorize(text):
     string_rank_pairs = get_text_rankings(sess, text)
     ret = ''
     for word, rank in string_rank_pairs:
-        ret += f'<span style=\'background-color: {color_from_rank(rank)}\'>{word}</span>'
+        ret += f"<span style='background-color: {color_from_rank(rank)}'>{word}</span>"
     return ret
 
 # ============
@@ -158,14 +158,18 @@ def colorize(text):
 @app.route('/')
 def index():
     '''Default route'''
-    return send_from_directory('../static/', 'foo.html')
+    return send_from_directory('./static/', 'foo.html')
 
+@app.route('/about')
+def about():
+    '''Default route'''
+    return send_from_directory('./static/', 'about.html')
 
 
 @app.route('/static/<filename>')
 def server_static(filename):
     '''servers files in the static directory'''
-    return send_from_directory('../static/', filename)
+    return send_from_directory('./static/', filename)
 
 @app.route('/generate', methods=['POST'])
 def generate():
@@ -186,7 +190,7 @@ def highlight():
     '''endpoint for highlighting button'''
     text = request.form['text']
     print(f'Highlight: text = {text}')
-    return '<p>' + colorize(text) + '</p>'
+    return colorize(text)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():

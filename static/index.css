@@ -5,11 +5,164 @@
     font-style: normal;
 }
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        /* transform: translateY(-20px); */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+} 
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+} 
+
+@keyframes skewMation {
+    0% {
+        transform: skewX(0deg);
+        letter-spacing: 0.5px;
+    }
+    25% {
+        transform: skewX(3deg);
+    }
+    75% {
+        transform: skewX(-3deg);
+        letter-spacing: normal;
+    }
+    100% {
+        transform: skewX(0deg);
+        letter-spacing: 0.5px;
+    }
+}
+
+@keyframes skewMation2 {
+    0% {
+        transform: skewX(0deg);
+    }
+    25% {
+        transform: skewX(1deg);
+    }
+    75% {
+        transform: skewX(-1deg);
+    }
+    100% {
+        transform: skewX(0deg);
+    }
+}
+
 h1 {
     font-family: 'sleepTalk';
-    font-size: 60px;
+    font-size: 72px;
     font-weight: 900;
-    margin: 50px 0 0 0;
+    padding: 50px 0 0 0;
+    margin: 0;
+    text-shadow: 2px 0px #11111166, -2px 0px #11111166;
+    text-align: center;
+    color: #ddd;
+    animation: fadeInDown 1.5s ease-in-out 0s 1, skewMation 5s ease-in-out 0s infinite; 
+}
+
+h2 {
+    font-family: 'sleepTalk';
+    font-size: 30px;
+    margin: 0;
+    /* text-shadow: 2px 0px #eeeeee66, -2px 0px #eeeeee66; */
+    text-shadow: 2px 0px #11111166, -2px 0px #11111166;
+    text-align: center;
+    color: #ddd;
+    letter-spacing: -1px;
+    animation: fadeIn 1.5s ease-in-out 0s 1;
+}
+
+h3 {
+    font-family: 'sleepTalk';
+    font-size: 20px;
+    color: #666;
+}
+
+a:link, a:visited {
+    text-decoration: none;
+    color: #bbb;
+    transition-timing-function: ease-out;
+    transition-duration: 0.5s;
+}
+
+a:hover {
+    letter-spacing: 1.2;
+    transition-timing-function: ease-out;
+    transition-duration: 0.5s;
+}
+
+@keyframes bodyBackAnim {
+    0% {
+        opacity: 0.15;
+    }
+
+    10% {
+        opacity: 0.6;
+    }
+
+    25% {
+        opacity: 0.3;
+    }
+
+    42% {
+        opacity: 0.1;
+    }
+
+    69% {
+        opacity: 0.32;
+    }
+
+    86% {
+        opacity: 0.1;
+    }
+
+    100% {
+        opacity: 0.15;
+    }
+}
+
+#backgroundDiv {
+    width:150%;
+  	min-height:calc(100vh + 1080px);
+  	position:fixed;
+  	top:0;
+  	/*left:-250px;*/
+  	background: url("./stardust.png") no-repeat center center fixed;
+  	-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  	z-index:-10;
+  	animation: bodyBackAnim 10s ease-in-out infinite, skewMation2 30s ease-in-out 0s infinite;
+      opacity: 0.3;
+      filter: brightness(2.0);
+}
+body {
+    margin: 0;
+    background-color: #111;
+    /* background: #111f url("stardust.png") repeat fixed center; */
+    /* animation: bodyBackAnim 10s ease-in-out infinite; */
+}
+
+#container {
+    margin: 5px auto;
+    width: 800px;
+    /* background: #8881 url("stardust.png") repeat fixed center; */
+    background-color: #3335;
+    height: auto;
+    border: 1px solid #4444;
 }
 
 #buttonContainer {
@@ -18,22 +171,40 @@ h1 {
 }
 
 #displayHighlight {
-    width: 70%;
-    
+    white-space: pre-wrap;
+    background-color: #111;
+    color: #aaa;
+    max-width: 650px;
+    display: inline-block;
+    border-radius: 12px;
+    padding: 5px 10px;
+    margin: 10px;
+    animation: fadeInDown 0.5s ease-in-out 0s 1;
+}
+pre {
+    white-space: pre-wrap;
 }
 
-pre {
-	white-space: pre-wrap;       /* css-3 */
-	white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-	white-space: -pre-wrap;      /* Opera 4-6 */
-	white-space: -o-pre-wrap;    /* Opera 7 */
-	word-wrap: break-word;       /* Internet Explorer 5.5+ */
+.predictionBox > p {
+    color: #111;
 }
+
+#container > p {
+    font-family: 'sleepTalk';
+    font-size: 25px;
+    color: #eee;
+}
+
 div.predictionBox {
-    background-color: lightgray;
-    padding: 5px;
+    white-space: pre-wrap;
+    font-family: 'sleepTalk';
+    font-size: 20px;
+    background-color: #eeee;
+    border-radius: 12px;
+    padding: 5px 10px;
     border: 5px solid darkgray;
     margin: 5px;
+    animation: fadeInDown 1s ease-in-out 0s 1;
     transition-duration: 0.1s;
 }
 
@@ -56,19 +227,30 @@ div.predictionBox:active {
     border-radius: 50%;
     width: 10px;
     height: 10px;
-    animation: spin 2s linear infinite;
+    animation: fadeInDown 1s linear 1, spin 2s linear infinite; 
 }
 
 .button {
     font-family: 'sleepTalk';
-    font-size: 30px;
+    font-size: 25px;
     text-align: center;
     padding-top: 10px;
     width: 100px;
     border: 0;
     margin: auto 10px;
     /* padding: 0; */
-    background-color: turquoise;
+    border-radius:10px;
+    background-color: #52182e;
+    color: #eee;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #53303d;
+}
+
+.button:focus {
+    outline: 0;
 }
 
 .center {
@@ -88,6 +270,17 @@ div.predictionBox:active {
 #form1 {
     border-radius: 25px;
     padding: 10px;
+    width: 650px;
+    height: 170px;
+    max-width: 800px;
+    min-width: 400px;
+    font-family: 'sleepTalk';
+    font-size: 20px;
+    background-color: #ddd;
+}
+
+#form1:focus {
+    outline: 0;
 }
 
 .notVisible {
