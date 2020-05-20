@@ -16,7 +16,6 @@ from highlight import get_text_rankings
 app = Flask(__name__)
 
 
-
 # ============
 # Classes
 # ============
@@ -178,7 +177,7 @@ def generate():
 
     text = request.form['text']
     print(f'Generate POST: prefix = {text}')
-    stories = generate_html_boxes_from_text_model(text, 100, num_samples=5)
+    stories = generate_html_boxes_from_text_model(text, 100, num_samples=3)
 
     generate_end = time.time()
     print(f'Time to respond: {generate_end - generate_start}')
@@ -256,6 +255,7 @@ story_prefix_templates = [
             'I had a perfect story, which I told without interruption: "A long, long time ago,'
         )
 ]
+
 long_runner = LongRunner()
 
 sess = gpt2.start_tf_sess()
