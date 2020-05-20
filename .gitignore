@@ -26,3 +26,6 @@ models/
 checkpoint/
 
 .vscode/
+
+cert.crt
+priv.key
